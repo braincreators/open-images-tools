@@ -2,11 +2,11 @@ def get_column(row, header_to_idx, column_name):\
     return row[header_to_idx[column_name]]
 
 
-def get_bbox(row, header_to_idx):
-    x1 = get_column(row, header_to_idx, 'XMin')
-    y1 = get_column(row, header_to_idx, 'YMin')
-    x2 = get_column(row, header_to_idx, 'XMax')
-    y2 = get_column(row, header_to_idx, 'YMax')
+def get_bbox(row, header_to_idx, width, height):
+    x1 = int(float(get_column(row, header_to_idx, 'XMin')) * width)
+    y1 = int(float(get_column(row, header_to_idx, 'YMin')) * height)
+    x2 = int(float(get_column(row, header_to_idx, 'XMax')) * width)
+    y2 = int(float(get_column(row, header_to_idx, 'YMax')) * height)
 
     return BBox(x1, y1, x2, y2)
 

@@ -4,7 +4,7 @@ import json
 import click
 import imagesize
 
-from .utils import get_column, get_bbox
+from open_images_tools.utils import get_column, get_bbox
 
 
 def parse_class_names(class_names_file):
@@ -54,7 +54,7 @@ def bbox_annotations_to_coco(images_folder, bbox_annotation_file, class_names_fi
                     }
                 )
 
-            bbox = get_bbox(row, header_to_idx)
+            bbox = get_bbox(row, header_to_idx, width=width, height=height)
             label_code = get_column(row, header_to_idx, 'LabelName')
 
             coco_spec['annotations'].append(
@@ -72,14 +72,14 @@ def bbox_annotations_to_coco(images_folder, bbox_annotation_file, class_names_fi
 
 
 @click.command()
-@click.option('--image-folder', required=True, help='image folder path')
+@click.option('--images-folder', required=True, help='image folder path')
 @click.option('--bbox-annotations', required=True, help='bounding box annotations csv file path')
 @click.option('--class-descriptions', required=True, help='class descriptions csv file path')
 @click.option('--output-file', required=True, help='output file path')
-def main(images_folder, bbox_annotaions, class_descriptions, output):
-    coco = bbox_annotations_to_coco(images_folder, bbox_annotaions, class_descriptions)
-    with open(output, 'w') as f:
-        json.dump(coco, f)
+def main(images_folder, bbox_annotations, class_descriptions, output_file):
+    coco = bbox_annotations_to_coco(images_folder, bbox_annotations, class_descriptions, output=output_file)
+    with open(output_file, 'w') as f:
+        json.dump(coco, f, indent=2)
 
 
 if __name__ == '__main__':
