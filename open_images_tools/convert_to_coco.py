@@ -20,7 +20,7 @@ def parse_class_names(class_names_file):
     return class_idx_to_name, class_code_to_idx
 
 
-def bbox_annotations_to_coco(images_folder, bbox_annotation_file, class_names_file, output):
+def bbox_annotations_to_coco(images_folder, bbox_annotation_file, class_names_file):
 
     coco_spec = {
         'categories': [],
@@ -77,7 +77,7 @@ def bbox_annotations_to_coco(images_folder, bbox_annotation_file, class_names_fi
 @click.option('--class-descriptions', required=True, help='class descriptions csv file path')
 @click.option('--output-file', required=True, help='output file path')
 def main(images_folder, bbox_annotations, class_descriptions, output_file):
-    coco = bbox_annotations_to_coco(images_folder, bbox_annotations, class_descriptions, output=output_file)
+    coco = bbox_annotations_to_coco(images_folder, bbox_annotations, class_descriptions)
     with open(output_file, 'w') as f:
         json.dump(coco, f, indent=2)
 
