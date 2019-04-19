@@ -1,8 +1,10 @@
 import csv
 import json
+from subprocess import Popen, PIPE
 
 import click
 import imagesize
+from tqdm import tqdm
 
 from open_images_tools.utils import get_column, get_bbox
 
@@ -22,6 +24,14 @@ def parse_class_names(class_names_file):
 
 def bbox_annotations_to_coco(images_folder, bbox_annotation_file, class_names_file):
 
+    try:
+        p1 = Popen(['cat', '{}'.format(bbox_annotation_file)], stdout=PIPE)
+        p2 = Popen(['wc', '-l'], stdin=p1.stdout, stdout=PIPE)
+        out, _ = p2.communicate()
+        row_count = int(out)
+    except Exception:
+        row_count = None
+
     coco_spec = {
         'categories': [],
         'images': [],
@@ -39,12 +49,19 @@ def bbox_annotations_to_coco(images_folder, bbox_annotation_file, class_names_fi
 
         seen_images = set()
         image_id = 0
-        for i, row in enumerate(reader):
+        for i, row in tqdm(enumerate(reader), total=row_count - 1):
             image_name = get_column(row, header_to_idx, 'ImageID')
             if image_name not in seen_images:
                 image_id += 1
                 image_file_name = '{}.jpg'.format(image_name)
-                width, height = imagesize.get("{}/{}".format(images_folder, image_file_name))
+
+                try:
+                    width, height = imagesize.get("{}/{}".format(images_folder, image_file_name))
+                except FileNotFoundError:
+                    print("file {}/{} not found, skipping!".format(images_folder, image_name))
+                    image_id -= 1
+                    continue
+
                 coco_spec['images'].append(
                     {
                         'id': image_id,
