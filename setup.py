@@ -4,7 +4,7 @@ with open('requirements.txt') as f:
     required = f.read().splitlines()
 
 setup(
-    name="open-image-tools",
+    name="open-images-tools",
     version='0.0.1',
     author="Braincreators B.V",
     author_email="miguel@braincreators.com",
