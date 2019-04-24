@@ -3,9 +3,11 @@ import click
 from tqdm import tqdm
 
 
-def sanity_check(coco_file):
-    with open(coco_file, 'r') as f:
-        coco_data = json.load(f)
+def sanity_check(coco_data):
+
+    if isinstance(coco_data, str):
+        with open(coco_data, 'r') as f:
+            coco_data = json.load(f)
 
     valid_category_ids = {category['id'] for category in coco_data['categories']}
     image_id_to_idx = {coco_data['images'][i]['id']: i for i in range(len(coco_data['images']))}
@@ -36,8 +38,8 @@ def sanity_check(coco_file):
         assert x + w <= coco_data['images'][image_id_to_idx[annotation['image_id']]]['width']
         assert y + h <= coco_data['images'][image_id_to_idx[annotation['image_id']]]['height']
 
-        assert isinstance(annotation['is_crowd'], int)
-        assert annotation['is_crowd'] in {0, 1}
+        assert isinstance(annotation['iscrowd'], int)
+        assert annotation['iscrowd'] in {0, 1}
 
 
 @click.command()
