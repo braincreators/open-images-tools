@@ -7,6 +7,7 @@ import imagesize
 from tqdm import tqdm
 
 from open_images_tools.utils import get_column, get_bbox
+from open_images_tools.coco.sanity_check import sanity_check
 
 
 def parse_class_names(class_names_file):
@@ -93,10 +94,14 @@ def bbox_annotations_to_coco(images_folder, bbox_annotation_file, class_names_fi
 @click.option('--bbox-annotations', required=True, help='bounding box annotations csv file path')
 @click.option('--class-descriptions', required=True, help='class descriptions csv file path')
 @click.option('--output-file', required=True, help='output file path')
-def main(images_folder, bbox_annotations, class_descriptions, output_file):
+@click.option('--sanity-checker', default=False, is_flag=True, help='run sanity checker on the produced file')
+def main(images_folder, bbox_annotations, class_descriptions, output_file, sanity_checker):
     coco = bbox_annotations_to_coco(images_folder, bbox_annotations, class_descriptions)
     with open(output_file, 'w') as f:
         json.dump(coco, f, indent=2)
+
+    if sanity_checker:
+        sanity_check(output_file)
 
 
 if __name__ == '__main__':
