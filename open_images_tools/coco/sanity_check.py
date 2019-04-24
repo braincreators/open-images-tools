@@ -10,10 +10,10 @@ def sanity_check(coco_file):
         coco_data = json.load(f)
 
     valid_category_ids = {category['id'] for category in coco_data['categories']}
-    image_id_to_idx = {coco_data['images']['id']: i for i in range(coco_data['images'])}
+    image_id_to_idx = {coco_data['images'][i]['id']: i for i in range(len(coco_data['images']))}
 
     seen_annotation_ids = set()
-    for annotation in tqdm(coco_data, total=len(coco_data['annotations'])):
+    for annotation in tqdm(coco_data['annotations'], total=len(coco_data['annotations'])):
         # check ids
         assert isinstance(annotation['id'], int)
         assert annotation['id'] not in seen_annotation_ids
