@@ -28,6 +28,7 @@ def sanity_check(coco_file):
         # check bbox
         assert len(annotation['bbox']) == 4
         assert all(isinstance(coord, int) for coord in annotation['bbox'])
+        assert all(coord >= 0 for coord in annotation['bbox'])
         x, y, w, h = annotation['bbox']
 
         assert isinstance(annotation['area'], (int, float))
