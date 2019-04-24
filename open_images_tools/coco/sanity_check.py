@@ -3,8 +3,6 @@ import click
 from tqdm import tqdm
 
 
-@click.command()
-@click.option('-f', '--coco-file', required=True, help='coco json path to be checked')
 def sanity_check(coco_file):
     with open(coco_file, 'r') as f:
         coco_data = json.load(f)
@@ -41,5 +39,11 @@ def sanity_check(coco_file):
         assert annotation['is_crowd'] in {0, 1}
 
 
+@click.command()
+@click.option('-f', '--coco-file', required=True, help='coco json path to be checked')
+def main(coco_file):
+    sanity_check(coco_file)
+
+
 if __name__ == '__main__':
-    sanity_check()
+    main()
