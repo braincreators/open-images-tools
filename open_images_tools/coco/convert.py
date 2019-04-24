@@ -81,7 +81,7 @@ def bbox_annotations_to_coco(images_folder, bbox_annotation_file, class_names_fi
                     'image_id': image_id,
                     'bbox': bbox.to_list(mode='xywh'),
                     'area': bbox.area(),
-                    'iscrowd': get_column(row, header_to_idx, 'IsGroupOf'),
+                    'iscrowd': int(get_column(row, header_to_idx, 'IsGroupOf')),
                     'category_id': class_code_to_idx[label_code]
                 }
             )
@@ -101,7 +101,7 @@ def main(images_folder, bbox_annotations, class_descriptions, output_file, sanit
         json.dump(coco, f, indent=2)
 
     if sanity_checker:
-        sanity_check(output_file)
+        sanity_check(coco)
 
 
 if __name__ == '__main__':
