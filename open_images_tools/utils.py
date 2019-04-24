@@ -27,4 +27,4 @@ class BBox:
             raise ValueError("Invalid Mode: {}".format(mode))
 
     def area(self):
-        return self.x2 - self.x1 * self.y2 - self.y1
+        return (self.x2 - self.x1) * (self.y2 - self.y1)

@@ -7,6 +7,7 @@ import imagesize
 from tqdm import tqdm
 
 from open_images_tools.utils import get_column, get_bbox
+from open_images_tools.coco.sanity_check import sanity_check
 
 
 def parse_class_names(class_names_file):
@@ -73,6 +74,8 @@ def bbox_annotations_to_coco(images_folder, bbox_annotation_file, class_names_fi
 
             bbox = get_bbox(row, header_to_idx, width=width, height=height)
             label_code = get_column(row, header_to_idx, 'LabelName')
+            is_crowd = int(get_column(row, header_to_idx, 'IsGroupOf'))
+            is_crowd = is_crowd if is_crowd >= 0 else 0
 
             coco_spec['annotations'].append(
                 {
@@ -80,7 +83,7 @@ def bbox_annotations_to_coco(images_folder, bbox_annotation_file, class_names_fi
                     'image_id': image_id,
                     'bbox': bbox.to_list(mode='xywh'),
                     'area': bbox.area(),
-                    'iscrowd': get_column(row, header_to_idx, 'IsGroupOf'),
+                    'iscrowd': is_crowd,
                     'category_id': class_code_to_idx[label_code]
                 }
             )
@@ -93,10 +96,14 @@ def bbox_annotations_to_coco(images_folder, bbox_annotation_file, class_names_fi
 @click.option('--bbox-annotations', required=True, help='bounding box annotations csv file path')
 @click.option('--class-descriptions', required=True, help='class descriptions csv file path')
 @click.option('--output-file', required=True, help='output file path')
-def main(images_folder, bbox_annotations, class_descriptions, output_file):
+@click.option('--sanity-checker', default=False, is_flag=True, help='run sanity checker on the produced file')
+def main(images_folder, bbox_annotations, class_descriptions, output_file, sanity_checker):
     coco = bbox_annotations_to_coco(images_folder, bbox_annotations, class_descriptions)
     with open(output_file, 'w') as f:
         json.dump(coco, f, indent=2)
+
+    if sanity_checker:
+        sanity_check(coco)
 
 
 if __name__ == '__main__':
