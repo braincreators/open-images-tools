@@ -73,6 +73,19 @@ def bbox_annotations_to_coco(images_folder, bbox_annotation_file, class_names_fi
                 )
 
             bbox = get_bbox(row, header_to_idx, width=width, height=height)
+            bbox_list = bbox.to_list(mode='xywh')
+            x, y, w, h = bbox_list
+
+            # placeholder for segmentation
+            segmentation = [
+                [
+                    x, y,  # Top left coordinates.
+                    x, y + h,  # Bottom left coordinates.
+                    x + w, y + h,  # Bottom right coordinates.
+                    x + w, y  # Top right coordinates.
+                ]
+            ]
+
             label_code = get_column(row, header_to_idx, 'LabelName')
             is_crowd = int(get_column(row, header_to_idx, 'IsGroupOf'))
             is_crowd = is_crowd if is_crowd >= 0 else 0
@@ -81,7 +94,8 @@ def bbox_annotations_to_coco(images_folder, bbox_annotation_file, class_names_fi
                 {
                     'id': i,
                     'image_id': image_id,
-                    'bbox': bbox.to_list(mode='xywh'),
+                    'bbox': bbox_list,
+                    'segmentation': segmentation,
                     'area': bbox.area(),
                     'iscrowd': is_crowd,
                     'category_id': class_code_to_idx[label_code]
