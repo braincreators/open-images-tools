@@ -74,6 +74,8 @@ def bbox_annotations_to_coco(images_folder, bbox_annotation_file, class_names_fi
 
             bbox = get_bbox(row, header_to_idx, width=width, height=height)
             label_code = get_column(row, header_to_idx, 'LabelName')
+            is_crowd = int(get_column(row, header_to_idx, 'IsGroupOf'))
+            is_crowd = is_crowd if is_crowd >= 0 else 0
 
             coco_spec['annotations'].append(
                 {
@@ -81,7 +83,7 @@ def bbox_annotations_to_coco(images_folder, bbox_annotation_file, class_names_fi
                     'image_id': image_id,
                     'bbox': bbox.to_list(mode='xywh'),
                     'area': bbox.area(),
-                    'iscrowd': int(get_column(row, header_to_idx, 'IsGroupOf')),
+                    'iscrowd': is_crowd,
                     'category_id': class_code_to_idx[label_code]
                 }
             )
